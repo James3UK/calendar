@@ -73,8 +73,10 @@ export default class {
         // Set options for each view
         let views = new Set([...keys(options.views), ...keys(input.views ?? {})]);
         for (let view of views) {
-            let defOpts = mergeOpts(options, options.views[view] ?? {});
-            let opts = mergeOpts(defOpts, input, input.views?.[view] ?? {});
+            let viewInput = input.views?.[view] ?? {};
+            let baseView = viewInput.type ?? view;
+            let defOpts = mergeOpts(options, options.views[baseView] ?? {});
+            let opts = mergeOpts(defOpts, input, viewInput);
             let component = opts.component;
             // Make sure we deal with valid opts from now on
             filterOpts(opts, this);

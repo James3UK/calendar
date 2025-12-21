@@ -35,7 +35,7 @@
         headerToolbar: {
             start: 'prev,next today',
             center: 'title',
-            end: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek resourceTimeGridWeek,resourceTimelineWeek'
+            end: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek resourceTimeGridWeek,resourceTimelineWeek,resourceTimelineThreeDays'
         },
         resources: [
             {id: 1, title: 'Resource A'},
@@ -78,7 +78,16 @@
         },
         dayMaxEvents: true,
         nowIndicator: true,
-        selectable: true
+        selectable: true,
+        buttonText: {
+            resourceTimelineThreeDays: '3 days'
+        },
+        views: {
+            resourceTimelineThreeDays: {
+                type: 'resourceTimelineDay',
+                duration: {days: 3}
+            }
+        }
     });
 
     function createEvents() {
