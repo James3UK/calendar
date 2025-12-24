@@ -36,7 +36,7 @@
     }
 
     .ec-timeline & {
-        grid-template-columns: max-content repeat(var(--ec-grid-cols), minmax(0, 1fr));
+        grid-template-columns: max-content repeat(var(--ec-grid-cols), min-content);
         grid-template-rows: max-content var(--ec-grid-rows);
         flex-grow: 1;
     }
