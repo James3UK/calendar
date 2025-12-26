@@ -37,7 +37,7 @@ export default class {
         this._currentRange = currentRange(this);
         this._activeRangeExt = writable(identity);
         this._activeRange = activeRange(this);
-        this._fetchedRange = writable({ start: undefined, end: undefined });
+        this._fetchedRange = writable({start: undefined, end: undefined});
         this._events = events(this);
         this._mainEl = writable(undefined);
         this._now = now();
