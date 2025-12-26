@@ -2479,6 +2479,27 @@ The mounted [View](#view-object) object
 
 You can specify options that apply only to specific views. To do so provide separate options objects within the `views` option, keyed by the name of the view.
 
+You can also define a custom view by specifying the `type` property. The custom view will inherit options from the specified view type.
+
+<details>
+  <summary>Example</summary>
+
+```js
+let options = {
+    views: {
+        timeGridFourDay: {
+            type: 'timeGridWeek',
+            duration: {days: 4},
+            buttonText: '4 day'
+        }
+    },
+    headerToolbar: {
+        center: 'timeGridFourDay'
+    }
+};
+```
+</details>
+
 ### weekNumberContent
 - Type `Content` or `function`
 - Default `undefined`
