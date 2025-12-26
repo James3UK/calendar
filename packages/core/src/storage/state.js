@@ -93,7 +93,7 @@ export default class {
             filterOpts(opts, this);
             // Process options
             for (let key of keys(opts)) {
-                let { set, _set = set, ...rest } = this[key];
+                let {set, _set = set, ...rest} = this[key];
 
                 this[key] = {
                     // Set value in all views
@@ -137,7 +137,7 @@ export default class {
 }
 
 function parseOpts(opts, parsers) {
-    let result = { ...opts };
+    let result = {...opts};
     for (let key of keys(parsers)) {
         if (key in result) {
             result[key] = parsers[key](result[key]);
