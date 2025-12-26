@@ -78,6 +78,17 @@
             ],
             scrollTime: '09:00',
             events: createEvents(),
+            buttonText: {
+                dayGridMonth: "month",
+                timeGridWeek: "week",
+                timeGridDay: "day",
+                listWeek: "list",
+                resourceTimeGridWeek: "resource week",
+                resourceTimelineWeek: "resource timeline week",
+                today: "Today",
+                resourceTimelineDay: "day",
+                resourceTimelineThreeDays: "3 days"
+            },
             views: {
                 timeGridWeek: { pointer: true },
                 resourceTimeGridWeek: {
@@ -97,7 +108,8 @@
                     duration: { days: 3 }
                 },
                 resourceTimelineThreeDays: {
-                    slotDuration: '00:20',
+                    type: "resourceTimelineWeek",
+                    slotDuration: '00:30',
                     slotLabelInterval: '01:00',
                     duration: { days: 3 }
                 }
