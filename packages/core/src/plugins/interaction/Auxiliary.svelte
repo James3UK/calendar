@@ -1,20 +1,49 @@
 <script>
     import {getContext} from 'svelte';
-    import AuxState from './state.svelte.js';
+    import {bgEvent, helperEvent, listen} from '#lib';
+    import {eventDraggable} from './lib';
     import Action from './Action.svelte';
     import Pointer from './Pointer.svelte';
     import Resizer from './Resizer.svelte';
 
-    let mainState = getContext('state');
-    new AuxState(mainState);
+    let {theme, editable, eventStartEditable, pointer, _mainEl,
+        _interaction, _iClasses} = getContext('state');
 
-    let {interaction, options: {pointer}} = $derived(mainState);
+    $_interaction.resizer = Resizer;
 
-    // svelte-ignore state_referenced_locally
-    interaction.resizer = Resizer;
+    $effect(() => {
+        $theme;
+        $eventStartEditable;
+        $editable;
+        $_iClasses = (classNames, event) => {
+            let {display} = event;
+            return [
+                ...classNames,
+                helperEvent(display)
+                    ? [$theme[display]]
+                    : (
+                        !bgEvent(display) && eventDraggable(event, $eventStartEditable, $editable)
+                            ? [$theme.draggable]
+                            : []
+                    )
+            ];
+        };
+    });
+
+    $effect(() => {
+        if ($_mainEl) {
+            return listen($_mainEl, 'scroll', mainElScrollHandler);
+        }
+    });
+
+    function mainElScrollHandler() {
+        for (let component of Object.values($_interaction)) {
+            component?.handleScroll?.();
+        }
+    }
 </script>
 
-<Action bind:this={interaction.action}/>
-{#if pointer}
-    <Pointer bind:this={interaction.pointer}/>
+<Action bind:this={$_interaction.action}/>
+{#if $pointer}
+    <Pointer bind:this={$_interaction.pointer}/>
 {/if}

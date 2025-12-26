@@ -1,11 +1,10 @@
 <script>
     import {getContext} from 'svelte';
-    import {getPayload} from '#lib';
+    import {getPayload, identity} from '#lib';
 
     let {resource} = $props();
 
-    let {options} = $derived(getContext('state'));
-    let {resources, theme} = $derived(options);
+    let {resources, theme} = getContext('state');
 
     let payload = $state.raw({});
     let expanded = $state(true);
@@ -19,7 +18,7 @@
         expanded = !expanded;
         payload.expanded = expanded;
         toggle(payload.children, expanded);
-        options.resources = [...resources];
+        resources.update(identity);
     }
 
     function toggle(children, expand) {
@@ -34,12 +33,12 @@
 </script>
 
 {#each Array(payload.level) as level}
-    <span class="{theme.expander}"></span>
+    <span class="{$theme.expander}"></span>
 {/each}
 
-<span class="{theme.expander}">
+<span class="{$theme.expander}">
     {#if payload.children?.length}
-        <button class="{theme.button}" {onclick}>
+        <button class="{$theme.button}" {onclick}>
             {#if expanded}&minus;{:else}&plus;{/if}
         </button>
     {/if}

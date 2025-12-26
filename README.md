@@ -123,7 +123,6 @@ Inspired by [FullCalendar](https://fullcalendar.io/), it implements similar opti
   - [slotMaxTime](#slotmaxtime)
   - [slotMinTime](#slotmintime)
   - [slotWidth](#slotwidth)
-  - [snapDuration](#snapduration)
   - [theme](#theme)
   - [titleFormat](#titleformat)
   - [unselect](#unselect)
@@ -246,8 +245,8 @@ This bundle contains a version of the calendar that includes all plugins and is 
 
 The first step is to include the following lines of code in the `<head>` section of your page:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@5.1.0/dist/event-calendar.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@5.1.0/dist/event-calendar.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@5.0.5/dist/event-calendar.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@5.0.5/dist/event-calendar.min.js"></script>
 ```
 
 <details>
@@ -2252,7 +2251,7 @@ The interval at which slot labels should be displayed in `timeGrid`/`resourceTim
 
 This should be a value that can be parsed into a [Duration](#duration-object) object.
 
-If not specified, then if [slotDuration](#slotduration) is less than 1 hour, the interval is considered to be twice as long, i.e. the labels are displayed every other time.
+If not specified, then if `slotDuration` is less than 1 hour, the interval is considered to be twice as long, i.e. the labels are displayed every other time.
 
 If the interval is set to zero, then labels are displayed for all slots, including the very first one, which is not normally displayed in `timeGrid` views.
 
@@ -2274,19 +2273,9 @@ This should be a value that can be parsed into a [Duration](#duration-object) ob
 
 ### slotWidth
 - Type `integer`
-- Default `32`
+- Default `16`
 
 Defines the time slot width in pixels in `resourceTimeline` views.
-
-### snapDuration
-- Type `string`, `integer` or `object`
-- Default `undefined`
-
-Defines the step for the time axis along which an event is [dragged](#editable), [resized](#editable) or [selection](#selectable) is made.
-
-This should be a value that can be parsed into a [Duration](#duration-object) object.
-
-If not specified, then equal to [slotDuration](#slotduration).
 
 ### theme
 - Type `object` or `function`
@@ -2497,18 +2486,15 @@ You can also define a custom view by specifying the `type` property. The custom 
 
 ```js
 let options = {
-    buttonText: {
-      resourceTimelineThreeDays: '3 days'
-    }
     views: {
-      resourceTimelineThreeDays: {
-        type: "resourceTimelineWeek",
-        slotDuration: "02:00",
-        duration: { days: 3 },
-      }
+        timeGridFourDay: {
+            type: 'timeGridWeek',
+            duration: {days: 4},
+            buttonText: '4 day'
+        }
     },
     headerToolbar: {
-        end: 'resourceTimelineThreeDays'
+        center: 'timeGridFourDay'
     }
 };
 ```

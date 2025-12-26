@@ -1,10 +1,10 @@
 <script>
-    import {getContext, onMount, untrack} from 'svelte';
+    import {getContext, onMount} from 'svelte';
     import {contentFrom, toLocalDate, isFunction} from '#lib';
 
-    let {resource, date = undefined, setLabel = undefined} = $props();
+    let {resource, date = undefined} = $props();
 
-    let {resourceLabelContent, resourceLabelDidMount, _intlDayHeaderAL} = getContext('state');
+    let {resourceLabelContent, resourceLabelDidMount} = getContext('state');
 
     let el = $state();
     // Content
@@ -20,19 +20,6 @@
             return resource.title;
         }
     });
-    // Aria-label
-    let ariaLabel = $state();
-    $effect(() => {
-        content;
-        untrack(() => {
-            if (date) {
-                ariaLabel = $_intlDayHeaderAL.format(date) + ', ' + el.innerText;
-            } else if (setLabel) {
-                ariaLabel = undefined;
-                setLabel(el.innerText);
-            }
-        });
-    });
 
     onMount(() => {
         if (isFunction($resourceLabelDidMount)) {
@@ -47,6 +34,5 @@
 
 <span
     bind:this={el}
-    aria-label="{ariaLabel}"
     {@attach contentFrom(content)}
 ></span>

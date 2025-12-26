@@ -1,8 +1,79 @@
 import {
-    addDuration, assign, cloneDate, createEventChunk, DAY_IN_SECONDS, eventIntersects, isFunction, subtractDay
+    addDay, addDuration, assign, bgEvent, cloneDate, createAllDayChunks, createEventChunk, datesEqual, eventIntersects,
+    isFunction, outsideRange, prepareAllDayChunks,
 } from '#lib';
 
-export function createChunks(event, days) {
+/**
+ * Days with prepared start and end times
+ */
+export function createGrid($_viewDates, $_slotTimeLimits, $validRange, $highlightedDates) {
+    let days = [];
+    let gridColumn = 1;
+    for (let date of $_viewDates) {
+        days.push({
+            gridColumn,
+            gridRow: 1,
+            resource: undefined,
+            start: addDuration(cloneDate(date), $_slotTimeLimits.min),
+            end: addDuration(cloneDate(date), $_slotTimeLimits.max),
+            dayStart: date,
+            dayEnd: addDay(cloneDate(date)),
+            disabled: outsideRange(date, $validRange),
+            highlight: $highlightedDates.some(d => datesEqual(d, date))
+        });
+        ++ gridColumn;
+    }
+
+    return [days];
+}
+
+export function createEventChunks($_filteredEvents, grid) {
+    let chunks = [];
+    let bgChunks = [];
+    let allDayChunks = [];
+    let allDayBgChunks = [];
+    for (let event of $_filteredEvents) {
+        for (let days of grid) {
+            if (bgEvent(event.display)) {
+                bgChunks = bgChunks.concat(createChunks(event, days));
+                if (event.allDay) {
+                    allDayBgChunks = allDayBgChunks.concat(createAllDayChunks(event, days));
+                }
+            } else {
+                if (event.allDay) {
+                    allDayChunks = allDayChunks.concat(createAllDayChunks(event, days));
+                } else {
+                    chunks = chunks.concat(createChunks(event, days));
+                }
+            }
+        }
+    }
+    groupChunks(chunks);
+    prepareAllDayChunks(allDayChunks);
+
+    return {chunks, bgChunks, allDayChunks, allDayBgChunks};
+}
+
+export function createIEventChunks($_iEvents, grid) {
+    let iChunks = [];
+    let allDayIChunks = [];
+    for (let event of $_iEvents) {
+        if (!event) {
+            continue;
+        }
+        for (let days of grid) {
+            if (event.allDay) {
+                allDayIChunks = allDayIChunks.concat(createAllDayChunks(event, days));
+            } else {
+                iChunks = iChunks.concat(createChunks(event, days));
+            }
+        }
+    }
+
+    return {iChunks, allDayIChunks};
+}
+
+function createChunks(event, days) {
     let chunks = [];
     for (let {gridColumn, gridRow, resource, start, end, disabled} of days) {
         if (!disabled && eventIntersects(event, start, end, resource)) {
@@ -21,7 +92,7 @@ export function createChunks(event, days) {
     return chunks;
 }
 
-export function groupChunks(chunks) {
+function groupChunks(chunks) {
     let groups = {};
     for (let chunk of chunks) {
         let {gridColumn} = chunk;
@@ -68,19 +139,4 @@ export function createAllDayContent(allDayContent) {
     }
 
     return content;
-}
-
-export function setExtensions(mainState) {
-    mainState.extensions.activeRange = (start, end) => {
-        // Dependencies
-        let {options: {slotMaxTime}} = mainState;
-        if (slotMaxTime.days || slotMaxTime.seconds > DAY_IN_SECONDS) {
-            addDuration(subtractDay(end), slotMaxTime);
-            let start2 = subtractDay(cloneDate(end));
-            if (start2 < start) {
-                start = start2;
-            }
-        }
-        return {start, end};
-    };
 }

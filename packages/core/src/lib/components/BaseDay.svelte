@@ -17,20 +17,19 @@
         children
     } = $props();
 
-    let {today, interaction: {action}, options: {theme}} = $derived(getContext('state'));
-    let {snap} = $derived(getContext('view-state'));  // timeGrid has snap, others don't
+    let {_interaction, _today, theme} = getContext('state');
 
-    let isToday = $derived(datesEqual(date, today));
+    let isToday = $derived(datesEqual(date, $_today));
 
     // Class
     let classNames = $derived(classes([
-        theme.day,
-        theme.weekdays?.[date.getUTCDay()],
-        isToday && theme.today,
-        highlight && theme.highlight,
-        disabled && theme.disabled,
-        noIeb && theme.noIeb,
-        noBeb && theme.noBeb
+        $theme.day,
+        $theme.weekdays?.[date.getUTCDay()],
+        isToday && $theme.today,
+        highlight && $theme.highlight,
+        disabled && $theme.disabled,
+        noIeb && $theme.noIeb,
+        noBeb && $theme.noBeb
     ]));
 
     // dateFromPoint
@@ -45,13 +44,11 @@
             };
         });
     });
-
-    let onpointerdown = $derived(!disabled && action ? jsEvent => action.select(jsEvent, snap) : undefined);
 </script>
 
 <div
     bind:this={el}
     class={classNames}
     {role}
-    {onpointerdown}
+    onpointerdown={!disabled ? $_interaction.action?.select : undefined}
 >{@render children?.()}</div>

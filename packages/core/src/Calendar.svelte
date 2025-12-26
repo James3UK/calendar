@@ -1,29 +1,31 @@
 <script>
     import './styles/index.css';
     import {setContext, untrack} from 'svelte';
+    import {get} from 'svelte/store';
+    import {diff} from './storage/options.js';
+    import State from './storage/state.js';
+    import Toolbar from './Toolbar.svelte';
+    import Auxiliary from './Auxiliary.svelte';
     import {
-        assign, cloneDate, createEvents, getElementWithPayload, getPayload, nextDate,
+        assign, createEvents, getElementWithPayload, getPayload, listView, nextDate,
         prevDate, toEventWithLocalDates, toLocalDate, toViewWithLocalDates
     } from '#lib';
-    import MainState from './storage/state.svelte.js';
-    import {diff} from './storage/options.svelte.js';
-    import Toolbar from './Toolbar.svelte';
 
     let {plugins = [], options = {}} = $props();
 
     // svelte-ignore state_referenced_locally
-    let mainState = new MainState(plugins, options);
-    setContext('state', mainState);
+    let state = new State(plugins, options);
+    setContext('state', state);
 
     let {
-        auxComponents, features, events, interaction, iClass, view, viewComponent: View,
-        options: {date, duration, height, hiddenDays, theme}
-    } = $derived(mainState);
+        _viewComponent, _interaction, _iClass, _events,
+        date, duration, hiddenDays, height, theme, view
+    } = state;
 
     // Reactively update options that did change
     // svelte-ignore state_referenced_locally
     let prevOptions = {...options};
-    $effect.pre(() => {
+    $effect(() => {
         for (let [name, value] of diff(options, prevOptions)) {
             untrack(() => {
                 setOption(name, value);
@@ -33,28 +35,27 @@
     });
 
     export function setOption(name, value) {
-        mainState.setOption(name, value, false);
+        state._set(name, value);
         return this;
     }
 
     export function getOption(name) {
-        let value = mainState.options[name];
+        let value = state._get(name);
         return value instanceof Date ? toLocalDate(value) : value;
     }
 
     export function refetchEvents() {
-        mainState.fetchedRange = {start: undefined, end: undefined};
+        state._fetchedRange.set({start: undefined, end: undefined});
         return this;
     }
 
     export function getEvents() {
-        return events.map(toEventWithLocalDates);
+        return $_events.map(toEventWithLocalDates);
     }
 
     export function getEventById(id) {
-        id = String(id);
-        for (let event of events) {
-            if (event.id === id) {
+        for (let event of $_events) {
+            if (event.id == id) {
                 return toEventWithLocalDates(event);
             }
         }
@@ -63,16 +64,17 @@
 
     export function addEvent(event) {
         event = createEvents([event])[0];
-        events.push(event);
+        $_events.push(event);
+        $_events = $_events;
         return toEventWithLocalDates(event);
     }
 
     export function updateEvent(event) {
         let id = String(event.id);
-        let idx = events.findIndex(event => event.id === id);
+        let idx = $_events.findIndex(event => event.id === id);
         if (idx >= 0) {
             event = createEvents([event])[0];
-            events[idx] = event;
+            $_events[idx] = event;
             return toEventWithLocalDates(event);
         }
         return null;
@@ -80,19 +82,20 @@
 
     export function removeEventById(id) {
         id = String(id);
-        let idx = events.findIndex(event => event.id === id);
+        let idx = $_events.findIndex(event => event.id === id);
         if (idx >= 0) {
-            events.splice(idx, 1);
+            $_events.splice(idx, 1);
+            $_events = $_events;
         }
         return this;
     }
 
     export function getView() {
-        return toViewWithLocalDates(view);
+        return toViewWithLocalDates(get(state._view));
     }
 
     export function unselect() {
-        interaction.action?.unselect();
+        $_interaction.action?.unselect();
         return this;
     }
 
@@ -108,28 +111,28 @@
     }
 
     export function next() {
-        mainState.setOption('date', nextDate(cloneDate(date), duration));
+        $date = nextDate($date, $duration);
         return this;
     }
 
     export function prev() {
-        mainState.setOption('date', prevDate(cloneDate(date), duration, hiddenDays));
+        $date = prevDate($date, $duration, $hiddenDays);
         return this;
     }
+
+    let View = $derived($_viewComponent);
 </script>
 
 <div
     class={[
-        theme.calendar,
-        theme.view,
-        iClass && theme[iClass]
+        $theme.calendar,
+        $theme.view,
+        $_iClass && $theme[$_iClass]
     ]}
-    style:height
-    role="{features.includes('list') ? 'list' : 'table'}"
+    style:height={$height}
+    role="{listView($view) ? 'list' : 'table'}"
 >
     <Toolbar/>
     <View/>
-    {#each auxComponents as AuxComponent}
-        <AuxComponent/>
-    {/each}
 </div>
+<Auxiliary/>

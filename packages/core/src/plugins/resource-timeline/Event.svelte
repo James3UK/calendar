@@ -1,13 +1,12 @@
 <script>
     import {getContext} from 'svelte';
-    import {height, toSeconds} from '#lib';
+    import {height, helperEvent, toSeconds} from '#lib';
     import {repositionEvent} from './lib.js';
     import {InteractableEvent} from '#components';
 
     let {chunk} = $props();
 
-    let {options: {slotDuration, slotWidth}} = $derived(getContext('state'));
-    let {monthView} = $derived(getContext('view-state'));
+    let {slotDuration, slotWidth, _monthView} = getContext('state');
 
     let el = $state();
     let margin = $state(0);
@@ -16,10 +15,10 @@
     let styles = $derived(style => {
         style['grid-column'] = `${chunk.gridColumn} / span ${chunk.dates.length}`;
         style['grid-row'] = chunk.gridRow;
-        if (!monthView) {
-            let left = chunk.left / toSeconds(slotDuration) * slotWidth;
+        if (!$_monthView) {
+            let left = chunk.left / toSeconds($slotDuration) * $slotWidth;
             style['inset-inline-start'] = `${left}px`;
-            style['inline-size'] = `${chunk.width / toSeconds(slotDuration) * slotWidth}px`;
+            style['inline-size'] = `${chunk.width / toSeconds($slotDuration) * $slotWidth}px`;
         }
         let marginTop = margin;
         if (event._margin) {
@@ -34,7 +33,7 @@
     });
 
     export function reposition() {
-        margin = repositionEvent(chunk, height(el), monthView);
+        margin = repositionEvent(chunk, height(el), $_monthView);
     }
 </script>
 

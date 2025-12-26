@@ -2,25 +2,29 @@
     import {getContext} from 'svelte';
     import {addDuration, cloneDate, getElementWithPayload, getPayload} from '#lib';
 
-    let {iEvents, options: {slotDuration}} = $derived(getContext('state'));
+    let {_iEvents, slotDuration} = getContext('state');
 
     let x = 0, y = 0;
-    let iEvent;
+
+    $effect(() => {
+        if ($_iEvents[0]) {
+            removePointerEvent();
+        }
+    });
 
     function move() {
         let dayEl = getElementWithPayload(x, y);
 
-        if (dayEl && !iEvents.has('action')) {
+        if (dayEl) {
             let {allDay, date, resource, disabled} = getPayload(dayEl)(x, y);
             if (!disabled) {
-                if (!iEvent) {
+                if (!$_iEvents[1]) {
                     createPointerEvent();
                 }
-                iEvent.allDay = allDay;
-                iEvent.start = date;
-                iEvent.end = addDuration(cloneDate(date), slotDuration);
-                iEvent.resourceIds = resource ? [resource.id] : [];
-                iEvents.set('pointer', {...iEvent});
+                $_iEvents[1].allDay = allDay;
+                $_iEvents[1].start = date;
+                $_iEvents[1].end = addDuration(cloneDate(date), $slotDuration);
+                $_iEvents[1].resourceIds = resource ? [resource.id] : [];
 
                 return;
             }
@@ -42,7 +46,7 @@
     }
 
     function createPointerEvent() {
-        iEvent = {
+        $_iEvents[1] = {
             id: '{pointer}',
             title: '',
             display: 'pointer',
@@ -54,8 +58,9 @@
     }
 
     function removePointerEvent() {
-        iEvent = undefined;
-        iEvents.delete('pointer');
+        if ($_iEvents[1]) {
+            $_iEvents[1] = null;
+        }
     }
 
     function validEvent(jsEvent) {

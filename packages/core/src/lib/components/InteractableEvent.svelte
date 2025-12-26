@@ -1,7 +1,7 @@
 <script>
     import {getContext} from 'svelte';
     import BaseEvent from './BaseEvent.svelte';
-    import {bgEvent, helperEvent} from '#lib';
+    import {bgEvent, helperEvent} from "#lib";
 
     let {
         el = $bindable(),
@@ -12,21 +12,22 @@
         forceMargin
     } = $props();
 
-    let {iClasses, interaction: {action, resizer: Resizer}} = $derived(getContext('state'));
-    let {snap} = $derived(getContext('view-state'));  // timeGrid has snap, others don't
+    let {_interaction, _iClasses} = getContext('state');
 
     let event = $derived(chunk.event);
     let display = $derived(chunk.event.display);
 
     // Class
-    let classes = $derived(classNames => iClasses(classNames, event));
+    let classes = $derived(classNames => $_iClasses(classNames, event));
 
     function createDragHandler(event) {
-        return action?.draggable(event)
-            ? jsEvent => action.drag(event, jsEvent, forceDate, forceMargin, snap)
-            : action?.noAction;
+        return $_interaction.action?.draggable(event)
+            ? jsEvent => $_interaction.action.drag(event, jsEvent, forceDate, forceMargin)
+            : $_interaction.action?.noAction;
     }
     let onpointerdown = $derived(!bgEvent(display) && !helperEvent(display) ? createDragHandler(event) : undefined);
+
+    let Resizer = $derived($_interaction.resizer);
 </script>
 
 <BaseEvent bind:el {chunk} {classes} {styles} {onpointerdown}>

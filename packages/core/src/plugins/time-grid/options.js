@@ -1,6 +1,19 @@
 import {assign, createDuration} from '#lib';
 
 /**
+ * TimeGrid + ResourceTimeGrid
+ */
+export function createTROptions(options) {
+    if (!('allDaySlot' in options)) {
+        assign(options, {
+            allDayContent: undefined,
+            allDaySlot: true,
+            slotEventOverlap: true
+        });
+    }
+}
+
+/**
  * TimeGrid + ResourceTimeGrid + ResourceTimeline
  */
 export function createTRROptions(options) {
@@ -18,29 +31,12 @@ export function createTRROptions(options) {
                 minute: '2-digit'
             },
             slotMaxTime: '24:00:00',
-            slotMinTime: '00:00:00',
-            snapDuration: undefined
+            slotMinTime: '00:00:00'
         });
         assign(options.theme, {
             nowIndicator: 'ec-now-indicator',
             sidebar: 'ec-sidebar',
             slot: 'ec-slot',
-        });
-    }
-}
-
-/**
- * TimeGrid + ResourceTimeGrid
- */
-export function createTROptions(options) {
-    if (!('allDaySlot' in options)) {
-        assign(options, {
-            allDayContent: undefined,
-            allDaySlot: true,
-            slotEventOverlap: true
-        });
-        assign(options.theme, {
-            allDay: 'ec-all-day'
         });
     }
 }
@@ -55,8 +51,7 @@ export function createTRRParsers(parsers) {
             slotDuration: createDuration,
             slotLabelInterval: input => input !== undefined ? createDuration(input) : undefined,
             slotMaxTime: createDuration,
-            slotMinTime: createDuration,
-            snapDuration: input => input !== undefined ? createDuration(input) : undefined
+            slotMinTime: createDuration
         });
     }
 }
