@@ -2486,15 +2486,18 @@ You can also define a custom view by specifying the `type` property. The custom 
 
 ```js
 let options = {
+    buttonText: {
+      resourceTimelineThreeDays: '3 days'
+    }
     views: {
-        timeGridFourDay: {
-            type: 'timeGridWeek',
-            duration: {days: 4},
-            buttonText: '4 day'
-        }
+      resourceTimelineThreeDays: {
+        type: "resourceTimelineWeek",
+        slotDuration: "02:00",
+        duration: { days: 3 },
+      }
     },
     headerToolbar: {
-        center: 'timeGridFourDay'
+        end: 'resourceTimelineThreeDays'
     }
 };
 ```
