@@ -16,14 +16,6 @@ export default class {
         options = parseOpts(options, parsers);
         input = parseOpts(input, parsers);
 
-        if (input.views) {
-            for (let [name, viewOpts] of Object.entries(input.views)) {
-                if (typeof viewOpts.buttonText === 'string') {
-                    options.buttonText[name] = viewOpts.buttonText;
-                }
-            }
-        }
-
         // Create stores for options
         for (let [option, value] of Object.entries(options)) {
             this[option] = writable(value);
