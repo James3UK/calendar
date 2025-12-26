@@ -1,8 +1,8 @@
-import {get, writable} from 'svelte/store';
-import {tick} from 'svelte';
-import {createOptions, createParsers, specialOptions} from './options.js';
-import {activeRange, currentRange, dayGrid, events, now, today, view as view2, viewDates, viewTitle, filteredEvents} from './stores.js';
-import {identity, intl, intlRange, isFunction, keys, toViewWithLocalDates} from '#lib';
+import { get, writable } from 'svelte/store';
+import { tick } from 'svelte';
+import { createOptions, createParsers, specialOptions } from './options.js';
+import { activeRange, currentRange, dayGrid, events, now, today, view as view2, viewDates, viewTitle, filteredEvents } from './stores.js';
+import { identity, intl, intlRange, isFunction, keys, toViewWithLocalDates } from '#lib';
 
 export default class {
     constructor(plugins, input) {
@@ -37,7 +37,7 @@ export default class {
         this._currentRange = currentRange(this);
         this._activeRangeExt = writable(identity);
         this._activeRange = activeRange(this);
-        this._fetchedRange = writable({start: undefined, end: undefined});
+        this._fetchedRange = writable({ start: undefined, end: undefined });
         this._events = events(this);
         this._mainEl = writable(undefined);
         this._now = now();
@@ -82,10 +82,6 @@ export default class {
         let views = new Set([...keys(options.views), ...keys(input.views ?? {})]);
         for (let view of views) {
             let viewInput = input.views?.[view] ?? {};
-            if (typeof viewInput.buttonText === 'string') {
-                const buttonText = viewInput.buttonText;
-                viewInput = {...viewInput, buttonText: text => ({...text, [view]: buttonText})};
-            }
             let viewDef = options.views[view] ?? {};
             let viewType = viewInput.type || viewDef.type;
             let typeDef = viewType ? options.views[viewType] : {};
@@ -97,7 +93,7 @@ export default class {
             filterOpts(opts, this);
             // Process options
             for (let key of keys(opts)) {
-                let {set, _set = set, ...rest} = this[key];
+                let { set, _set = set, ...rest } = this[key];
 
                 this[key] = {
                     // Set value in all views
@@ -141,7 +137,7 @@ export default class {
 }
 
 function parseOpts(opts, parsers) {
-    let result = {...opts};
+    let result = { ...opts };
     for (let key of keys(parsers)) {
         if (key in result) {
             result[key] = parsers[key](result[key]);
