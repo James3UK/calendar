@@ -1,8 +1,8 @@
-import { get, writable } from 'svelte/store';
-import { tick } from 'svelte';
-import { createOptions, createParsers, specialOptions } from './options.js';
-import { activeRange, currentRange, dayGrid, events, now, today, view as view2, viewDates, viewTitle, filteredEvents } from './stores.js';
-import { identity, intl, intlRange, isFunction, keys, toViewWithLocalDates } from '#lib';
+import {get, writable} from 'svelte/store';
+import {tick} from 'svelte';
+import {createOptions, createParsers, specialOptions} from './options.js';
+import {activeRange, currentRange, dayGrid, events, now, today, view as view2, viewDates, viewTitle, filteredEvents} from './stores.js';
+import {identity, intl, intlRange, isFunction, keys, toViewWithLocalDates} from '#lib';
 
 export default class {
     constructor(plugins, input) {
