@@ -64,7 +64,6 @@
     export function addEvent(event) {
         event = createEvents([event])[0];
         events.push(event);
-        mainState.events = [...events];
         return toEventWithLocalDates(event);
     }
 
@@ -74,7 +73,6 @@
         if (idx >= 0) {
             event = createEvents([event])[0];
             events[idx] = event;
-            mainState.events = [...events];
             return toEventWithLocalDates(event);
         }
         return null;
@@ -85,7 +83,6 @@
         let idx = events.findIndex(event => event.id === id);
         if (idx >= 0) {
             events.splice(idx, 1);
-            mainState.events = [...events];
         }
         return this;
     }
